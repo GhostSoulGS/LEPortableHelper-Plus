@@ -3,6 +3,7 @@ LEPortableHelper-Plus 是我受到了 LEPortableHelper(https://github.com/wuliou
 
 能夠將 Locale Emulator 變為攜帶式套件
 
+
 具體使用方法為啟動 LEPortableHelper-Plus.exe
 
 接著選擇想要指定的檔案
