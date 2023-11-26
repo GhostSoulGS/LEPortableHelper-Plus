@@ -1,0 +1,31 @@
+
+LEPortableHelper-Plus 是我受到了 LEPortableHelper(https://github.com/wuliou/LEPortableHelper) 啟發後自製的小工具
+
+能夠將 Locale Emulator 變為攜帶式套件
+
+具體使用方法為啟動 LEPortableHelper-Plus.exe
+
+接著選擇想要指定的檔案
+
+然後就能選擇要[存成bat]或是[直接運行]
+
+關於下列的選項,[存成bat]三個選項都有效,[直接運行]則只有[管理員身分]有效
+
+[管理員身分] 決定運行時是否用管理員身分運行
+
+[相對路徑] 決定生成bat時是否採用相對路徑的形式
+
+[自訂路徑] 決定bat儲存的地方(默認會放在目標檔案旁邊)
+
+
+注意:此工具可以替換 Locale Emulator 版本 , 但是資料夾名稱固定為 Locale_Emulator (替換的資料至少需要安裝並移除一次)
+
+
+注意:替換或移動 Locale Emulator 又或是直接移動 LEPortableHelper-Plus 資料夾, LEPortableHelper-Plus 創建的所有bat都會失效,請注意
+
+
+注意:[相對路徑]生成的bat不可以移動位置,一旦移動位置就會失效,要再使用必須修改路徑才行
+
+
+小知識:可以將工具放在一個放資料用的 大資料夾 裡
+       這樣即使移動大資料夾,大資料夾內的各個小資料夾一樣可以享受[相對路徑]bat的功能而不會失效

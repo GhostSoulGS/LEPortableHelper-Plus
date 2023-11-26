@@ -1,0 +1,1 @@
+start /min pythonx64-3.11.5\python.exe LEP.py
