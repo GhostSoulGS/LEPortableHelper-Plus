@@ -9,7 +9,8 @@ LEPortableHelper-Plus 是我自製的一個小工具,可以將 Locale Emulator �
 
 此工具可以替換 Locale Emulator 版本 , 但是資料夾名稱固定為 Locale_Emulator (替換的資料至少需要安裝並移除一次)
 
-替換或移動 Locale Emulator 又或是直接移動 LEPortableHelper-Plus 資料夾, LEPortableHelper-Plus 創建的所有bat都會失效,請注意
+替換或移動 Locale Emulator 又或是直接移動 LEPortableHelper-Plus 資料夾<br>
+LEPortableHelper-Plus 創建的所有bat都會失效,請注意
 
 [相對路徑]生成的bat不可以移動位置,一旦移動位置就會失效,要再使用必須修改路徑才行
 
