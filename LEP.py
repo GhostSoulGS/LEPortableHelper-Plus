@@ -210,7 +210,7 @@ def save_to_file(cmd): # 創建bat
 		f.write("chcp 65001 > nul\n")
 		f.write("@echo off\n")
 		f.write("cd \"" + RuninJp_LEProc + "\"\n")
-		f.write( cmd + "\n")
+		f.write("start \"\" " + cmd + "\n")
 		f.write("exit\n\n\n\n")
 		f.write(" .\    = 當前目錄\n")
 		f.write(" ..\   = 上一個目錄\n")
