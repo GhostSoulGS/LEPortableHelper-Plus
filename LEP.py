@@ -1,13 +1,15 @@
+import logging
 from tkinter import filedialog
-from tkinter import messagebox
-from tkinter import ttk
+from tkinter import PhotoImage
 import tkinter as tk
 import xml.etree.ElementTree as ET
+import shutil
 import os
 
 # profiles = None
 dp0 = os.path.dirname(__file__)
 dp1 = f"{dp0}\Locale_Emulator"
+LE_3_3_LEcopy = False
 
 def welcome_message():
 	print("歡迎使用LEPortableHelper ,Locale Emulator便攜版")
@@ -18,10 +20,12 @@ def profile_not_exist_message():
 	print ('')
 # Locale_Emulator\LEConfig.xml
 def load_xml():
-	global profiles, LEProc
+	global profiles, LEProc, menu_name, profile_id
 	LEProc = "Locale_Emulator\LEProc.exe"
 	LEConfig = "Locale_Emulator\LEConfig.xml"
 	profiles = ET.parse(LEConfig).getroot()[0]
+	menu_name = [profile.get("Name") for profile in profiles[:]] # 提取名稱
+	profile_id = profiles[0].attrib['Guid'] # 默認設置
 
 def LE_1_button_start():
 	global save_and_start
@@ -33,17 +37,28 @@ def LE_2_button_start():
 	save_and_start = False
 	root.destroy()
 
-def LE_3_3_button():
-	global RuninJp_path
+def LE_3_3_button(): # 自定路徑
+	global RuninJp_path, LEcopy_path, LE_3_3_LEcopy
 	LE_3_3 = tk.Tk() # 創建主窗口
 	LE_3_3.withdraw() # 隱藏主窗口
-	LE_3_3_path = filedialog.askdirectory(initialdir=RuninJp_path) # 使用目錄選擇對話框讓用戶選擇目錄
-	LE_3_3.destroy() # 關閉主窗口
+	LE_3_3.attributes("-topmost", True)  # 置頂
+	LE_3_3_path = filedialog.askdirectory(initialdir=RuninJp_path, title="放置bat", parent=LE_3_3) # 使用目錄選擇對話框讓用戶選擇目錄
 	if LE_3_3_path: # 判斷是否有輸入路徑
 		print("save Path:", LE_3_3_path) # 顯示路徑
 		RuninJp_path = LE_3_3_path # 覆蓋路徑
+		if var3_1.get():
+			LE_3_3_LEcopy_path = filedialog.askdirectory(initialdir=RuninJp_path, title="放置LE", parent=LE_3_3)
+			print("copy Path:", LE_3_3_LEcopy_path) # 顯示路徑
+			if LE_3_3_LEcopy_path: # 判斷是否有輸入路徑
+				LEcopy_path = LE_3_3_LEcopy_path
+				LE_3_3_LEcopy = True 
+	LE_3_3.destroy() # 關閉主窗口
 
-def LE_4_button_exit():
+def LE_4_Guid_file(num):
+	global profile_id
+	profile_id = profiles[num].attrib['Guid']
+
+def LE_5_button_exit():
 	exit()
 
 def save_bat_start_file():
@@ -76,12 +91,18 @@ def save_bat_start_file():
 	LE_3.configure(bg="#E7FEFF")
 
 	LE_4 = tk.Toplevel(root)
-	LE_4.geometry("185x26")
+	LE_4.geometry("266x30")
 	LE_4.overrideredirect(True)
 	LE_4.attributes("-topmost", 1)
-	LE_4.configure(borderwidth=2)
-	LE_4.configure(relief="raised")
-	LE_4.configure(bg="#F0F8FF")
+	LE_4.configure(bg="#E7FEFF")
+
+	LE_5 = tk.Toplevel(root)
+	LE_5.geometry("185x26")
+	LE_5.overrideredirect(True)
+	LE_5.attributes("-topmost", 1)
+	LE_5.configure(borderwidth=2)
+	LE_5.configure(relief="raised")
+	LE_5.configure(bg="#F0F8FF")
 
 	LE_1_x = (LE_1.winfo_screenwidth() - LE_1.winfo_reqwidth()) / 2 - 100
 	LE_1_y = (LE_1.winfo_screenheight() - LE_1.winfo_reqheight()) / 2 + 50
@@ -92,21 +113,25 @@ def save_bat_start_file():
 	LE_3_x = (LE_3.winfo_screenwidth() - LE_3.winfo_reqwidth()) / 2 - 100
 	LE_3_y = (LE_3.winfo_screenheight() - LE_3.winfo_reqheight()) / 2 + 150
 
-	LE_4_x = (LE_4.winfo_screenwidth() - LE_4.winfo_reqwidth()) / 2 - 16
+	LE_4_x = (LE_4.winfo_screenwidth() - LE_4.winfo_reqwidth()) / 2 - 58
 	LE_4_y = (LE_4.winfo_screenheight() - LE_4.winfo_reqheight()) / 2 + 207
+
+	LE_5_x = (LE_5.winfo_screenwidth() - LE_5.winfo_reqwidth()) / 2 - 16
+	LE_5_y = (LE_5.winfo_screenheight() - LE_5.winfo_reqheight()) / 2 + 264
 
 	LE_1.geometry("+%d+%d" % (LE_1_x, LE_1_y))
 	LE_2.geometry("+%d+%d" % (LE_2_x, LE_2_y))
 	LE_3.geometry("+%d+%d" % (LE_3_x, LE_3_y))
 	LE_4.geometry("+%d+%d" % (LE_4_x, LE_4_y))
+	LE_5.geometry("+%d+%d" % (LE_5_x, LE_5_y))
 
 	LE_1_button = tk.Button(LE_1, text="Save to .bat", width=20, height=4, bg="#E7FEFF",highlightthickness=0, command=LE_1_button_start)
 	LE_1_button.place(x=-1, y=-1)
 
-	LE_2_button = tk.Button(LE_2, text="Run in Japanese", width=20, height=4, bg="#E7FEFF",highlightthickness=0, command=LE_2_button_start)
+	LE_2_button = tk.Button(LE_2, text="Run it now", width=20, height=4, bg="#E7FEFF",highlightthickness=0, command=LE_2_button_start)
 	LE_2_button.place(x=-1, y=-1)
 
-	LE_3_checkbox_1 = tk.Checkbutton(LE_3, text="Admin(管理員)", width=0, height=0, bg="#E7FEFF", variable=var3_1, activebackground="#E7FEFF")
+	LE_3_checkbox_1 = tk.Checkbutton(LE_3, text="LEcopy(加LE)-", width=0, height=0, bg="#E7FEFF", variable=var3_1, activebackground="#E7FEFF")
 	LE_3_checkbox_1.place(x=2, y=2)
 
 	LE_3_checkbox_2 = tk.Checkbutton(LE_3, text="RelativePath(相對路徑)", width=0, height=0, bg="#E7FEFF", variable=var3_2, activebackground="#E7FEFF")
@@ -115,16 +140,31 @@ def save_bat_start_file():
 	LE_3_button = tk.Button(LE_3, text="Path 自訂路徑", width=11, height=0, command=LE_3_3_button, bg="#E7FEFF")
 	LE_3_button.place(x=258, y=2)
 
-	LE_4_button = tk.Button(LE_4, text="[exit(關閉)]", width=25, height=0, command=LE_4_button_exit, bg="#E7FEFF")
-	LE_4_button.place(x=-1, y=-1)
+	LE_4_path = PhotoImage(file="LEP.dll") # 載入圖片
+	LE_4_image = tk.Label(LE_4, image=LE_4_path) # 創建 Label，顯示圖片
+	LE_4_image.configure(relief="flat")
+	LE_4_image.configure(bg="#E7FEFF")
+	LE_4_image.place(x=0, y=-3)
+
+	LE_4_menu = tk.StringVar(LE_4) # 創建下拉式菜單
+	LE_4_menu.set(menu_name[0])  # 初始選項
+	LE_4_menu_styles = tk.OptionMenu(LE_4, LE_4_menu, *menu_name, command=lambda x: LE_4_Guid_file(menu_name.index(LE_4_menu.get())))
+	LE_4_menu_styles.config(width=27, height=0, bg="#FFFFFF", activebackground="#FFFFFF")
+	LE_4_menu_styles["menu"].config(bg="#FFFFFF")
+	LE_4_menu_styles.configure(relief="groove")
+	LE_4_menu_styles.place(x=33, y=0)
+
+	LE_5_button = tk.Button(LE_5, text="[exit(關閉)]", width=25, height=0, command=LE_5_button_exit, bg="#E7FEFF")
+	LE_5_button.place(x=-1, y=-1)
 
 	root.mainloop()
+
 
 def list_all_profiles(): # 選擇文件
 	global RuninJp_name,RuninJp_path,RuninJp_LEProc,RuninJp_file
 	RuninJp = tk.Tk() # 創建主窗口
 	RuninJp.withdraw() # 隱藏主窗口
-	RuninJp_file = filedialog.askopenfilename() # 使用文件選擇框選擇文件
+	RuninJp_file = filedialog.askopenfilename(title="目標對象") # 使用文件選擇框選擇文件
 	RuninJp.destroy() # 關閉主窗口
 	assert RuninJp_file, "" # 判斷是否有輸入路徑
 	print("\nstart path:", RuninJp_file)
@@ -132,18 +172,25 @@ def list_all_profiles(): # 選擇文件
 	RuninJp_name,extension = os.path.splitext(RuninJp_name) # 去除副檔名
 	RuninJp_LEProc = dp1
 
-def RuninJp_Relative():
-	global RuninJp_file,RuninJp_LEProc
-	RuninJp_file = os.path.relpath(RuninJp_file, dp1) # 獲得目標相對路徑
-	RuninJp_LEProc = os.path.relpath(dp1, RuninJp_path) # 獲得Locale_Emulator相對路徑
-
-def LE_Admin_file():
-	global profile_id
-	if var3_1.get(): # 依管理員選擇抽取啟動參數
-		selected_profile = profiles[1]
+def LEcopy(): # 複製LE
+	global LEcopy_path, RuninJp_LEProc
+	if LE_3_3_LEcopy:
+		if not os.path.exists(f"{LEcopy_path}/Locale_Emulator"):  # 检查文件是否存在
+			shutil.copytree("./Locale_Emulator", f"{LEcopy_path}/Locale_Emulator")
 	else:
-		selected_profile = profiles[0]
-	profile_id = selected_profile.attrib['Guid']
+		if not os.path.exists(f"{RuninJp_path}/Locale_Emulator"):  # 检查文件是否存在
+			shutil.copytree("./Locale_Emulator", f"{RuninJp_path}/Locale_Emulator")
+		LEcopy_path = RuninJp_path
+	RuninJp_LEProc = f"{LEcopy_path}\Locale_Emulator"
+	
+def RuninJp_Relative(): # 獲得目標相對路徑
+	global RuninJp_file,RuninJp_LEProc
+	if var3_1.get():
+		RuninJp_file = os.path.relpath(RuninJp_file, f"{LEcopy_path}\Locale_Emulator") # 獲得目標相對路徑
+		RuninJp_LEProc = os.path.relpath(f"{LEcopy_path}\Locale_Emulator", RuninJp_path) # 獲得Locale_Emulator相對路徑
+	else:
+		RuninJp_file = os.path.relpath(RuninJp_file, dp1) # 獲得目標相對路徑
+		RuninJp_LEProc = os.path.relpath(dp1, RuninJp_path) # 獲得Locale_Emulator相對路徑
 
 def script_maker(): # 組成啟動路徑
 	exe = "LEProc.exe -runas"
@@ -163,7 +210,7 @@ def save_to_file(cmd): # 創建bat
 		f.write("chcp 65001 > nul\n")
 		f.write("@echo off\n")
 		f.write("cd \"" + RuninJp_LEProc + "\"\n")
-		f.write("start \"\" " + cmd + "\n")
+		f.write( cmd + "\n")
 		f.write("exit\n\n\n\n")
 		f.write(" .\    = 當前目錄\n")
 		f.write(" ..\   = 上一個目錄\n")
@@ -188,12 +235,12 @@ if __name__ == '__main__':
 		try:list_all_profiles();break
 		except:exit()
 	save_bat_start_file()
-	LE_Admin_file()
 	if save_and_start:
+		if var3_1.get():
+			LEcopy()
 		if var3_2.get():
 			RuninJp_Relative()
 		cmd = script_maker()
 		save_to_file(cmd)
 	else:
-		LE_Admin_file()
 		run_now()
