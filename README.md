@@ -11,7 +11,7 @@ I apologize for any inconvenience.
 
 支持Unicode路徑
 
-有 在目標配置Locale_Emulator文件 生成相對路徑 自訂儲存位置 等功能
+有 [在目標配置Locale_Emulator文件] [生成相對路徑] [自訂儲存位置] 等功能
 
 (關於具體的使用以及教學已配置在PDF文件裡,有興趣的可以看一看)
 
