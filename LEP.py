@@ -1,6 +1,8 @@
 import logging
+import tarfile
 from tkinter import filedialog
-from tkinter import PhotoImage
+from PIL import Image, ImageTk
+from io import BytesIO
 import tkinter as tk
 import xml.etree.ElementTree as ET
 import shutil
@@ -8,7 +10,6 @@ import os
 
 # profiles = None
 dp0 = os.path.dirname(__file__)
-dp1 = f"{dp0}\Locale_Emulator"
 LE_3_3_LEcopy = False
 
 def welcome_message():
@@ -27,10 +28,20 @@ def load_xml():
 	menu_name = [profile.get("Name") for profile in profiles[:]] # 提取名稱
 	profile_id = profiles[0].attrib['Guid'] # 默認設置
 
-def LE_1_button_start():
+def LE_1_button_start(): # 判別正常運作
 	global save_and_start
-	save_and_start = True
-	root.destroy()
+	try:
+		if var3_1.get():
+			if var3_2.get() and LE_3_3_LEcopy:
+				os.path.relpath(LEcopy_path, RuninJp_path)
+		else:
+			if var3_2.get():
+				os.path.relpath(f"{dp0}\{LEProc}", RuninJp_path)
+		save_and_start = True
+		root.destroy()
+	except: # 顯示錯誤圖片
+		LE_1_image.pack()
+		LE_1.after(1500, lambda: LE_1_image.pack_forget())
 
 def LE_2_button_start():
 	global save_and_start
@@ -61,12 +72,26 @@ def LE_4_Guid_file(num):
 def LE_5_button_exit():
 	exit()
 
+def open_PNG():
+	global RelativePath_png, LEP_png
+	with tarfile.open("PNG", 'r') as tar: # 讀取 tarball
+
+		RelativePath_png = tar.extractfile('RelativePath.png').read() # 提取檔案的二進制數據
+		RelativePath_png = Image.open(BytesIO(RelativePath_png)) # 將二進制數據轉換為 Pillow 圖像對象
+		RelativePath_png = ImageTk.PhotoImage(RelativePath_png) # 將圖像轉換為 PhotoImage 對象，以便在 tk.Label 中顯示
+
+		LEP_png = tar.extractfile('LEP.png').read() # 提取圖片的二進制數據
+		LEP_png = Image.open(BytesIO(LEP_png)) # 將二進制數據轉換為 Pillow 圖像對象
+		LEP_png = ImageTk.PhotoImage(LEP_png) # 將圖像轉換為 PhotoImage 對象，以便在 tk.Label 中顯示
+
 def save_bat_start_file():
-	global root,var3_1,var3_2
+	global root,var3_1,var3_2,LE_1,LE_1_image
 	root = tk.Tk()
 	root.withdraw()
 	var3_1 = tk.BooleanVar()
 	var3_2 = tk.BooleanVar()
+
+	open_PNG() # 提取圖片
 
 	LE_1 = tk.Toplevel(root)
 	LE_1.geometry("149x70")
@@ -128,6 +153,13 @@ def save_bat_start_file():
 	LE_1_button = tk.Button(LE_1, text="Save to .bat", width=20, height=4, bg="#E7FEFF",highlightthickness=0, command=LE_1_button_start)
 	LE_1_button.place(x=-1, y=-1)
 
+	LE_1.image = RelativePath_png # 保留對 PhotoImage 對象的引用，以免被當垃圾回收
+	LE_1_image = tk.Label(LE_1, image=RelativePath_png) # 創建 Label，顯示圖片
+	LE_1_image.configure(relief="flat")
+	LE_1_image.configure(bg="#E7FEFF")
+	LE_1_image.place(x=0, y=0)
+	LE_1_image.place_forget()
+
 	LE_2_button = tk.Button(LE_2, text="Run it now", width=20, height=4, bg="#E7FEFF",highlightthickness=0, command=LE_2_button_start)
 	LE_2_button.place(x=-1, y=-1)
 
@@ -140,8 +172,8 @@ def save_bat_start_file():
 	LE_3_button = tk.Button(LE_3, text="Path 自訂路徑", width=11, height=0, command=LE_3_3_button, bg="#E7FEFF")
 	LE_3_button.place(x=258, y=2)
 
-	LE_4_path = PhotoImage(file="LEP.dll") # 載入圖片
-	LE_4_image = tk.Label(LE_4, image=LE_4_path) # 創建 Label，顯示圖片
+	LE_4.image = LEP_png # 保留對 PhotoImage 對象的引用，以免被當垃圾回收
+	LE_4_image = tk.Label(LE_4, image=LEP_png) # 創建 Label，顯示圖片
 	LE_4_image.configure(relief="flat")
 	LE_4_image.configure(bg="#E7FEFF")
 	LE_4_image.place(x=0, y=-3)
@@ -170,53 +202,51 @@ def list_all_profiles(): # 選擇文件
 	print("\nstart path:", RuninJp_file)
 	RuninJp_path, RuninJp_name = os.path.split(RuninJp_file) # 獲取目錄和檔名
 	RuninJp_name,extension = os.path.splitext(RuninJp_name) # 去除副檔名
-	RuninJp_LEProc = dp1
+	RuninJp_LEProc = f"{dp0}\{LEProc}"
 
 def LEcopy(): # 複製LE
 	global LEcopy_path, RuninJp_LEProc
 	if LE_3_3_LEcopy:
-		if not os.path.exists(f"{LEcopy_path}/Locale_Emulator"):  # 检查文件是否存在
-			shutil.copytree("./Locale_Emulator", f"{LEcopy_path}/Locale_Emulator")
+		if not os.path.exists(f"{LEcopy_path}\Locale_Emulator"):  # 检查文件是否存在
+			shutil.copytree(".\Locale_Emulator", f"{LEcopy_path}\Locale_Emulator")
 	else:
-		if not os.path.exists(f"{RuninJp_path}/Locale_Emulator"):  # 检查文件是否存在
-			shutil.copytree("./Locale_Emulator", f"{RuninJp_path}/Locale_Emulator")
+		if not os.path.exists(f"{RuninJp_path}\Locale_Emulator"):  # 检查文件是否存在
+			shutil.copytree(".\Locale_Emulator", f"{RuninJp_path}\Locale_Emulator")
 		LEcopy_path = RuninJp_path
-	RuninJp_LEProc = f"{LEcopy_path}\Locale_Emulator"
+	RuninJp_LEProc = f"{LEcopy_path}\{LEProc}"
 	
 def RuninJp_Relative(): # 獲得目標相對路徑
 	global RuninJp_file,RuninJp_LEProc
 	if var3_1.get():
-		RuninJp_file = os.path.relpath(RuninJp_file, f"{LEcopy_path}\Locale_Emulator") # 獲得目標相對路徑
-		RuninJp_LEProc = os.path.relpath(f"{LEcopy_path}\Locale_Emulator", RuninJp_path) # 獲得Locale_Emulator相對路徑
+		RuninJp_file = os.path.relpath(RuninJp_file, RuninJp_path) # 獲得目標相對路徑
+		RuninJp_LEProc = os.path.relpath(f"{LEcopy_path}\{LEProc}", RuninJp_path) # 獲得Locale_Emulator相對路徑
 	else:
-		RuninJp_file = os.path.relpath(RuninJp_file, dp1) # 獲得目標相對路徑
-		RuninJp_LEProc = os.path.relpath(dp1, RuninJp_path) # 獲得Locale_Emulator相對路徑
+		RuninJp_file = os.path.relpath(RuninJp_file, RuninJp_path) # 獲得目標相對路徑
+		RuninJp_LEProc = os.path.relpath(f"{dp0}\{LEProc}", RuninJp_path) # 獲得Locale_Emulator相對路徑
 
 def script_maker(): # 組成啟動路徑
-	exe = "LEProc.exe -runas"
-	return f"{exe} {profile_id} \"{RuninJp_file}\""
+	exe = f"\"{RuninJp_LEProc}\" -runas"
+	return f"{exe} {profile_id} \"%~dp0{RuninJp_file}\""
 
 def save_to_file(cmd): # 創建bat
 	new_name = f"{RuninJp_name}.bat"
-	if os.path.exists(f"{RuninJp_path}\\{new_name}"):
+	if os.path.exists(f"{RuninJp_path}\{new_name}"):
 			num = 0
 			while True:
 				new_name = f"{RuninJp_name}_{num}.bat"  # 创建新的文件名
 				num += 1
-				if not os.path.exists(f"{RuninJp_path}\\{new_name}"):  # 检查文件是否存在
+				if not os.path.exists(f"{RuninJp_path}\{new_name}"):  # 检查文件是否存在
 					break
 
 	with open(f"{RuninJp_path}\{new_name}", "w", encoding="utf-8") as f:
 		f.write("chcp 65001 > nul\n")
-		f.write("@echo off\n")
-		f.write("cd \"" + RuninJp_LEProc + "\"\n")
-		f.write("start \"\" " + cmd + "\n")
+		f.write("@echo off\n\n")
+		f.write("start \"\" " + cmd + "\n\n")
 		f.write("exit\n\n\n\n")
 		f.write(" .\    = 當前目錄\n")
 		f.write(" ..\   = 上一個目錄\n")
-		f.write(" ..\..\= 上上個目錄 (以此類推)\n\n\n")
-		f.write(" cd 要填 bat 到 Locale_Emulator 的路徑\n\n")
-		f.write(" 執行檔案位置要填 Locale_Emulator 到 目標檔案 的路徑\n\n")
+		f.write(" ..\..\= 上上個目錄 (以此類推)\n\n")
+		f.write(" %~dp0 =  bat當前目錄\n\n")
 		f.write(" start \"\" 能使CMD視窗不會等待目標程式關閉\n")
 
 def run_now(): # 直接啟動
@@ -224,23 +254,27 @@ def run_now(): # 直接啟動
 	os.system(f"{LEProc} -runas {profile_id} \"{RuninJp_file}\"")
 
 if __name__ == '__main__':
-	welcome_message()
 	try:
-		load_xml()
-	except:
-		profile_not_exist_message()
-		input('Press [Enter] to exit.')
-		exit()
-	while(True):
-		try:list_all_profiles();break
-		except:exit()
-	save_bat_start_file()
-	if save_and_start:
-		if var3_1.get():
-			LEcopy()
-		if var3_2.get():
-			RuninJp_Relative()
-		cmd = script_maker()
-		save_to_file(cmd)
-	else:
-		run_now()
+		welcome_message()
+		try:
+			load_xml()
+		except:
+			profile_not_exist_message()
+			input('Press [Enter] to exit.')
+			exit()
+		while(True):
+			try:list_all_profiles();break
+			except:exit()
+		save_bat_start_file()
+		if save_and_start:
+			if var3_1.get():
+				LEcopy()
+			if var3_2.get():
+				RuninJp_Relative()
+			cmd = script_maker()
+			save_to_file(cmd)
+		else:
+			run_now()
+	except Exception as e:
+		logging.error(f"錯誤警報: {e}")
+		input()
