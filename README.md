@@ -13,7 +13,7 @@ I apologize for any inconvenience.
 
 主要選項: [生成bat檔] [直接執行]
 
-可選選項: [在目標配置Locale_Emulator文件] [生成相對路徑] [自訂儲存位置]
+可選選項: [在目標配置LEP(Locale_Emulator文件)] [生成相對路徑] [自訂儲存位置]
 
 (關於具體的使用以及教學已配置在PDF文件裡,有興趣的可以看一看)
 
