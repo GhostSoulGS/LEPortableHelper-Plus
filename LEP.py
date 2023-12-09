@@ -21,7 +21,8 @@ def profile_not_exist_message():
 	print ('')
 # Locale_Emulator\LEConfig.xml
 def load_xml():
-	global profiles, LEProc, menu_name, profile_id
+	global profiles, LEProc, menu_name, profile_id, LEP_
+	LEP_ = "LEP\LEProc.exe"
 	LEProc = "Locale_Emulator\LEProc.exe"
 	LEConfig = "Locale_Emulator\LEConfig.xml"
 	profiles = ET.parse(LEConfig).getroot()[0]
@@ -205,28 +206,28 @@ def list_all_profiles(): # 選擇文件
 	RuninJp_LEProc = f"{dp0}\{LEProc}"
 
 def LEcopy(): # 複製LE
-	global LEcopy_path, RuninJp_LEProc
+	global LEcopy_path, RuninJp_LEProc, new_num
 	if LE_3_3_LEcopy:
-		if not os.path.exists(f"{LEcopy_path}\Locale_Emulator"):  # 检查文件是否存在
-			shutil.copytree(".\Locale_Emulator", f"{LEcopy_path}\Locale_Emulator")
+		if not os.path.exists(f"{LEcopy_path}\LEP"):  # 检查文件是否存在
+			shutil.copytree(".\Locale_Emulator", f"{LEcopy_path}\LEP")
 	else:
-		if not os.path.exists(f"{RuninJp_path}\Locale_Emulator"):  # 检查文件是否存在
-			shutil.copytree(".\Locale_Emulator", f"{RuninJp_path}\Locale_Emulator")
+		if not os.path.exists(f"{RuninJp_path}\LEP"):  # 检查文件是否存在
+			shutil.copytree(".\Locale_Emulator", f"{RuninJp_path}\LEP")
 		LEcopy_path = RuninJp_path
-	RuninJp_LEProc = f"{LEcopy_path}\{LEProc}"
+	RuninJp_LEProc = f"{LEcopy_path}\{LEP_}"
 	
 def RuninJp_Relative(): # 獲得目標相對路徑
 	global RuninJp_file,RuninJp_LEProc
 	if var3_1.get():
 		RuninJp_file = os.path.relpath(RuninJp_file, RuninJp_path) # 獲得目標相對路徑
-		RuninJp_LEProc = os.path.relpath(f"{LEcopy_path}\{LEProc}", RuninJp_path) # 獲得Locale_Emulator相對路徑
+		RuninJp_LEProc = os.path.relpath(f"{LEcopy_path}\{LEP_}", RuninJp_path) # 獲得Locale_Emulator相對路徑
 	else:
 		RuninJp_file = os.path.relpath(RuninJp_file, RuninJp_path) # 獲得目標相對路徑
 		RuninJp_LEProc = os.path.relpath(f"{dp0}\{LEProc}", RuninJp_path) # 獲得Locale_Emulator相對路徑
 
-def script_maker(): # 組成啟動路徑
+def script_maker(batpath): # 組成啟動路徑
 	exe = f"\"{RuninJp_LEProc}\" -runas"
-	return f"{exe} {profile_id} \"%~dp0{RuninJp_file}\""
+	return f"{exe} {profile_id} \"{batpath}{RuninJp_file}\""
 
 def save_to_file(cmd): # 創建bat
 	new_name = f"{RuninJp_name}.bat"
@@ -247,7 +248,7 @@ def save_to_file(cmd): # 創建bat
 		f.write(" ..\   = 上一個目錄\n")
 		f.write(" ..\..\= 上上個目錄 (以此類推)\n\n")
 		f.write(" %~dp0 =  bat當前目錄\n\n")
-		f.write(" start \"\" 能使CMD視窗不會等待目標程式關閉\n")
+		f.write(" start \"\" 能使CMD視窗不會等待目標程式關閉\n\n")
 
 def run_now(): # 直接啟動
 	print (f"\nstart {RuninJp_path}")
@@ -271,10 +272,12 @@ if __name__ == '__main__':
 				LEcopy()
 			if var3_2.get():
 				RuninJp_Relative()
-			cmd = script_maker()
+				cmd = script_maker("%~dp0")
+			else:
+				cmd = script_maker("")
 			save_to_file(cmd)
 		else:
 			run_now()
 	except Exception as e:
 		logging.error(f"錯誤警報: {e}")
-		input()
+#		input()  # 如果有需要可以解放這行,能觀看錯誤信息
