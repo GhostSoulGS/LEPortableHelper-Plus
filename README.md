@@ -1,4 +1,4 @@
-<meta name="google-site-verification" content="PS42iwHLM1-MaYSYEI0RAd59z0Ja3w_uV_MCaQF81rg" /><br>
+<meta name="google-site-verification" content="5o0jQulNbNolFp88jd2AFbUsJt8_xqvb1c3ZRKDIQN0" /><br>
 # LEPortableHelper-Plus
 LEPortableHelper-Plus 是我自製的一個小工具,可以將 Locale Emulator 變為攜帶式套件(也能叫 便攜式 )
 
