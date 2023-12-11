@@ -26,4 +26,4 @@ I apologize for any inconvenience.
 # 契機:
 LEPortableHelper-Plus 是我受到了 [LEPortableHelper](https://github.com/wuliou/LEPortableHelper) 啟發後自製的小工具
 
-原理基本上是一樣的,只是我改善功能後將介面徹底翻新並換上了較新的Python3.11.5版本而已(也因此跟win7不相容了)
+原理有一部份是一樣的,只是我改善功能後將介面徹底翻新並換上了較新的Python3.11.5版本而已(也因此跟win7不相容了)
