@@ -14,6 +14,7 @@ import os
 dp0 = os.path.dirname(__file__) # 目錄
 LE_3_3_LEcopy = False # 判定是否有使用自定路徑
 exe_image = None  # 宣告 exe_image
+ResourceHacker_exists = True # 確認ResourceHacker.exe是否存在
 
 def welcome_message():
 	print("歡迎使用LEPortableHelper ,Locale Emulator便攜版")
@@ -24,13 +25,15 @@ def profile_not_exist_message():
 	print ('')
 # Locale_Emulator\LEConfig.xml
 def load_xml():
-	global profiles, LEProc, menu_name, profile_id, LEP
+	global profiles, LEProc, menu_name, profile_id, LEP, ResourceHacker_exists
 	LEP = "LEP\LEProc.exe"
 	LEProc = "Locale_Emulator\LEProc.exe"
 	LEConfig = "Locale_Emulator\LEConfig.xml"
 	profiles = ET.parse(LEConfig).getroot()[0]
 	menu_name = [profile.get("Name") for profile in profiles[:]] # 提取名稱
 	profile_id = profiles[0].attrib['Guid'] # 默認設置
+	if not os.path.exists("自訂exe\\ResourceHacker\\ResourceHacker.exe"):  # 检查文件是否存在
+		ResourceHacker_exists = False
 
 def LE_1_button_start(): # 判別正常運作
 	global save_and_start
@@ -70,6 +73,7 @@ def LE_3_3_button(): # 自定路徑
 	LE_3_3.destroy() # 關閉主窗口
 
 def LE_e_visibility(): # 控制 execopy 視窗顯示
+	if ResourceHacker_exists:	
 		if LE_e.winfo_ismapped():
 			LE_e.withdraw()  # 隱藏視窗
 			var3_3.set(False)
