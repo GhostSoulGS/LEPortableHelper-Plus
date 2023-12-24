@@ -3,7 +3,7 @@ LEPortableHelper-Plus 是我自製的一個小工具,可以將 Locale Emulator �
 
 他能夠讀取Locale Emulator的設定檔，在不安裝LE的情況下用語言環境執行程式
 
-![image](https://github.com/GhostSoulGS/LEPortableHelper-Plus/assets/86374153/1b6525c0-cb0a-4609-ab92-18a03c256171)
+![explorer_nPjPUrMyHl](https://github.com/GhostSoulGS/LEPortableHelper-Plus/assets/86374153/e34b6071-9257-40e5-9a89-d6867fe3ffaa)
 
 LEPortableHelper-Plus includes English<br>
 however, the explanations and tutorials do not contain English because I am not proficient in the language.<br>
